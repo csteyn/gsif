@@ -124,25 +124,74 @@ $(document).ready(function () {
 </div>
 
 
-<div id="new-developments-in-r-spatial" class="section level1">
-<h1>New developments in r-spatial</h1>
-<div id="new-developments-in-r" class="section level2">
-<h2>New developments in R</h2>
+<p>View these <a href="https://htmlpreview.github.io/?https://github.com/edzer/gsif/blob/master/gsif.html">slides</a> or their <a href="https://github.com/edzer/gsif">source</a></p>
+<div id="new-developments-in-or-around-r" class="section level2">
+<h2>New developments in or around R</h2>
 <ul>
 <li>tidyverse</li>
 <li>github</li>
-<li>twitter</li>
+<li>blogs, twitter, <a href="https://github.com/jennybc/reprex">reprex</a></li>
 <li>data science</li>
 </ul>
 </div>
 <div id="r-spatial" class="section level2">
 <h2>r-spatial</h2>
 <ul>
+<li><a href="http://r-spatial.org/" class="uri">http://r-spatial.org/</a> not to be confused with</li>
+<li><a href="http://rspatial.org/" class="uri">http://rspatial.org/</a></li>
 <li><a href="http://github.com/r-spatial" class="uri">http://github.com/r-spatial</a></li>
-<li>sf succeeding sp</li>
+<li>sf succeeding sp, sf-verse succeeding sp-verse.</li>
 <li>calls for follow up on raster: <a href="https://github.com/hunzikp/velox">velox</a>, <a href="https://github.com/ecohealthalliance/fasterize">fasterize</a>, <a href="https://github.com/ropensci/unconf17/issues/54">tidy raster</a>, <a href="https://github.com/edzer/stars/blob/master/PROPOSAL.md">stars</a></li>
 </ul>
 </div>
+<div id="sf" class="section level2">
+<h2>sf</h2>
+<p>Simple features are a standard for feature (mainly points, lines, polygons) data. The standard</p>
+<ul>
+<li>includes 17 geometry types,</li>
+<li>dominant are: <code>POINT</code>, <code>MULTIPOINT</code>, <code>LINESTRING</code>, <code>MULTILINESTRING</code>, <code>POLYGON</code>, <code>MULTIPOLYGON</code>, <code>GEOMETRYCOLLECTION</code></li>
+<li>defines points in 2D, 3D, possibly with an <code>M</code> (measured) coordinate</li>
+<li>assumes simple (linear) interpolation between points</li>
+<li>has polygons as a single outer ring followed by zero or more inner rings (holes)</li>
+<li>has text encodings, such as <code>LINESTRING(0 0,0 1,1 1)</code></li>
+<li>has binary encodings, used for I/O to libraries and storage in database blobs</li>
+<li></li>
+</ul>
+<p>Package <code>sf</code>:</p>
+<pre class="r"><code>library(sf)
+## Linking to GEOS 3.5.1, GDAL 2.1.3, proj.4 4.9.2, lwgeom 2.3.2 r15302</code></pre>
+<p>implements simple features in three levels: as single geometries:</p>
+<pre class="r"><code>(p1 = st_point(c(0,1)))
+## POINT(0 1)
+(p2 = st_point(c(2,3)))
+## POINT(2 3)
+(l = st_linestring(rbind(c(0,0), c(0,1), c(1,1))))
+## LINESTRING(0 0, 0 1, 1 1)
+str(p1)
+## Classes 'XY', 'POINT', 'sfg'  num [1:2] 0 1
+str(l)
+##  XY [1:3, 1:2] 0 0 1 0 1 1</code></pre>
+<p>as set of simple features <em>geometries</em>:</p>
+<pre class="r"><code>(p = st_sfc(p1, p2, crs = 4326))
+## Geometry set for 2 features 
+## geometry type:  POINT
+## dimension:      XY
+## bbox:           xmin: 0 ymin: 1 xmax: 2 ymax: 3
+## epsg (SRID):    4326
+## proj4string:    +proj=longlat +datum=WGS84 +no_defs
+## POINT(0 1)
+## POINT(2 3)</code></pre>
+<p>as simple features: objects with geometry</p>
+<pre class="r"><code>st_sf(soil_type = c(&quot;podzol&quot;, &quot;fluvisol&quot;), elevation = c(55, 12), geom = p)
+## Simple feature collection with 2 features and 2 fields
+## geometry type:  POINT
+## dimension:      XY
+## bbox:           xmin: 0 ymin: 1 xmax: 2 ymax: 3
+## epsg (SRID):    4326
+## proj4string:    +proj=longlat +datum=WGS84 +no_defs
+##   soil_type elevation       geom
+## 1    podzol        55 POINT(0 1)
+## 2  fluvisol        12 POINT(2 3)</code></pre>
 </div>
 
 
