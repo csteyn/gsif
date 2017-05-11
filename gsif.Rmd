@@ -1,0 +1,25 @@
+---
+title: "New developments in r-spatial"
+author: "Edzer Pebesma"
+date: "May 11, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# New developments in r-spatial
+
+## New developments in R
+
+* tidyverse
+* github
+* twitter
+* data science
+
+## r-spatial
+
+* http://github.com/r-spatial
+* sf succeeding sp
+* calls for follow up on raster: [velox](https://github.com/hunzikp/velox), [fasterize](https://github.com/ecohealthalliance/fasterize), [tidy raster](https://github.com/ropensci/unconf17/issues/54), [stars](https://github.com/edzer/stars/blob/master/PROPOSAL.md)
