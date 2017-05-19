@@ -1,9 +1,9 @@
 ---
 title: "New developments in r-spatial"
-author: "Edzer Pebesma"
 date: "May 11, 2017"
 output: html_document
 ---
+@[edzerpebesma](https://twitter.com/edzerpebesma)
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(collapse = TRUE)
@@ -21,10 +21,10 @@ View these [slides](https://htmlpreview.github.io/?https://github.com/edzer/gsif
 
 ## r-spatial
 
-* http://r-spatial.org/ not to be confused with
+* http://r-spatial.org/ and https://github.com/r-spatial/ not to be confused with
 * http://rspatial.org/
 * http://github.com/r-spatial
-* sf succeeding sp, sf-verse succeeding sp-verse.
+* sf succeeding sp, sf-verse succeeding [sp-verse](https://twitter.com/csgillespie/status/854438264538845184).
 * calls for follow up on raster: [velox](https://github.com/hunzikp/velox), [fasterize](https://github.com/ecohealthalliance/fasterize), [tidy raster](https://github.com/ropensci/unconf17/issues/54), [stars](https://github.com/edzer/stars/blob/master/PROPOSAL.md)
 
 ## sf
@@ -39,14 +39,26 @@ Simple features are a standard for feature (mainly points, lines, polygons) data
 * has a text encoding (WKT), such as `LINESTRING(0 0,0 1,1 1)`
 * has a binary encoding (WKB), used for I/O to libraries and storage in database blobs
 
-## anything wrong with `sp`?
+Who use simple features? Everyone:
 
-* it implement no simple features, but rather what was around in 2003 (shapefiles)
+* GDAL
+* GEOS
+* lwgeom
+* GeoJSON is a constrained set (epsg 4326, 7 types, polygons not crossing +/- 180E/W)
+* spatial databases: PostGIS, SQLite, spatialite, GeoPackage, MySQL, ...
+* ESRI's ArcGIS
+* GeoSPARQL
+
+## was anything wrong with `sp`?
+
+No, but
+
+* it does not implement simple features, but rather that what was around in 2003 (shapefiles)
 * roundtripping simple features potentially leads to data loss
-* its definition of polygon holes is somewhat ambiguous
-* 
+* its definition of polygon holes and the outer rings to which they belong is ambiguous and convoluted
+* it doesn't work easily with tidyverse, `Spatial` objects are not `data.frame`s
 
-Package `sf`:
+## Package `sf`:
 
 ```{r}
 library(sf)
@@ -65,5 +77,52 @@ as set of simple features _geometries_:
 ```
 as simple features: objects with geometry
 ```{r}
-st_sf(soil_type = c("podzol", "fluvisol"), elevation = c(55, 12), geom = p)
+(st = st_sf(soil_type = c("podzol", "fluvisol"), elevation = c(55, 12), geom = p))
+class(st)
+```
+Note that `sf` objects _are_ `data.frame`s.
+
+This model essentially mirrors that of a geometry column of spatial databases like PostGIS. We can deal with more than one geometry column.
+
+## How does this work? Enter *list-columns*
+
+```{r}
+df = data.frame(soil_type = c("podzol", "fluvisol"), elevation = c(55, 12))
+df$listcolumn = list(1:2, 1:5)
+df
+```
+Now add a geometry list column:
+```{r}
+df$geom = p
+df
+class(df)
+```
+we still have a `data.frame`; so we do
+```{r}
+s = st_as_sf(df)
+class(s)
+s
+```
+
+# Now polygons
+```{r}
+nc = st_read(system.file("gpkg/nc.gpkg", package="sf"))
+plot(nc[1])
+```
+but also
+```{r}
+library(ggplot2)
+nc$geometry = nc$geom
+ggplot(nc) + geom_sf(aes(fill = AREA))
+```
+```{r}    
+# setting the aspect ratio correctly.
+library(maps)
+world1 <- sf::st_as_sf(map('world', plot = FALSE, fill = TRUE))
+ggplot() + geom_sf(data = world1)
+world2 <- sf::st_transform(
+    world1,
+    "+proj=laea +y_0=0 +lon_0=155 +lat_0=-90 +ellps=WGS84 +no_defs"
+)
+ggplot() + geom_sf(data = world2)
 ```
