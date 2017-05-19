@@ -126,3 +126,10 @@ world2 <- sf::st_transform(
 )
 ggplot() + geom_sf(data = world2)
 ```
+See also DE-9IM: https://en.wikipedia.org/wiki/DE-9IM
+```{r}
+st_rook = function(a, b = a) st_relate(a, b, pattern = "F***1****")
+library(dplyr)
+nc <- nc %>% mutate(NB_ROOK = st_rook(.))
+nc[1:3,]
+```
